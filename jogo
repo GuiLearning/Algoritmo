@@ -1,0 +1,117 @@
+#include <stdio.h>
+
+// Definição da estrutura que representa o jogo
+typedef struct {
+    char tabuleiro[3][3];  // Tabuleiro 3x3
+    char jogador;          // Jogador atual ('X' ou 'O')
+} Jogo;
+
+// Função para inicializar o jogo
+void iniciarJogo(Jogo *jogo) {
+    // Preenche o tabuleiro com espaços em branco
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            jogo->tabuleiro[i][j] = ' ';
+        }
+    }
+    // Define o jogador inicial como 'X'
+    jogo->jogador = 'X';
+}
+
+// Função para imprimir o tabuleiro
+void printTabuleiro(Jogo *jogo) {
+    printf(" %c | %c | %c \n", jogo->tabuleiro[0][0], jogo->tabuleiro[0][1], jogo->tabuleiro[0][2]);
+    printf("---|---|---\n");
+    printf(" %c | %c | %c \n", jogo->tabuleiro[1][0], jogo->tabuleiro[1][1], jogo->tabuleiro[1][2]);
+    printf("---|---|---\n");
+    printf(" %c | %c | %c \n", jogo->tabuleiro[2][0], jogo->tabuleiro[2][1], jogo->tabuleiro[2][2]);
+}
+
+// Função para verificar se o tabuleiro está completo
+int tabuleiroCompleto(Jogo *jogo) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            // Se houver um espaço em branco, o tabuleiro não está completo
+            if (jogo->tabuleiro[i][j] == ' ') {
+                return 0;
+            }
+        }
+    }
+    // Se não houver espaços em branco, o tabuleiro está completo
+    return 1;
+}
+
+// Função para verificar se o jogador atual venceu
+int verificacao(Jogo *jogo) {
+    // Verifica todas as linhas e colunas
+    for (int i = 0; i < 3; i++) {
+        if (jogo->tabuleiro[i][0] == jogo->jogador && jogo->tabuleiro[i][1] == jogo->jogador && jogo->tabuleiro[i][2] == jogo->jogador) {
+            return 1;
+        }
+        if (jogo->tabuleiro[0][i] == jogo->jogador && jogo->tabuleiro[1][i] == jogo->jogador && jogo->tabuleiro[2][i] == jogo->jogador) {
+            return 1;
+        }
+    }
+    // Verifica as diagonais
+    if (jogo->tabuleiro[0][0] == jogo->jogador && jogo->tabuleiro[1][1] == jogo->jogador && jogo->tabuleiro[2][2] == jogo->jogador) {
+        return 1;
+    }
+    if (jogo->tabuleiro[0][2] == jogo->jogador && jogo->tabuleiro[1][1] == jogo->jogador && jogo->tabuleiro[2][0] == jogo->jogador) {
+        return 1;
+    }
+    // Retorna 0 se não houver vitória
+    return 0;
+}
+
+// Função para alternar o jogador atual
+void mudarJogador(Jogo *jogo) {
+    jogo->jogador = (jogo->jogador == 'X') ? 'O' : 'X';
+}
+
+// Função principal do jogo
+void Jogar(Jogo *jogo) {
+    int row, col;
+    while (1) {
+        // Imprime o tabuleiro atual
+        printTabuleiro(jogo);
+        // Solicita a posição da jogada ao jogador atual
+        printf("Jogador %c, insira a posição (linha e coluna): ", jogo->jogador);
+        scanf("%d %d", &row, &col);
+
+        // Verifica se a jogada é válida
+        if (row < 1 || row > 3 || col < 1 || col > 3 || jogo->tabuleiro[row-1][col-1] != ' ') {
+            printf("Movimento inválido. Tente de novo.\n");
+            continue;
+        }
+
+        // Atualiza o tabuleiro com a jogada do jogador atual
+        jogo->tabuleiro[row-1][col-1] = jogo->jogador;
+
+        // Verifica se o jogador atual venceu
+        if (verificacao(jogo)) {
+            printTabuleiro(jogo);
+            printf("Jogador %c venceu!\n", jogo->jogador);
+            break;
+        }
+
+        // Verifica se o tabuleiro está completo (empate)
+        if (tabuleiroCompleto(jogo)) {
+            printTabuleiro(jogo);
+            printf("O jogo empatou!\n");
+            break;
+        }
+
+        // Alterna para o próximo jogador
+        mudarJogador(jogo);
+    }
+}
+
+// Função principal do programa
+int main() {
+    Jogo jogo;
+    // Inicializa o jogo
+    iniciarJogo(&jogo);
+    // Inicia a partida
+    Jogar(&jogo);
+    return 0;
+}
